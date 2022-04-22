@@ -32,25 +32,25 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # install python3
 printf "Installing python and dependencies... "
 apt update
-apt install -y python3
-apt install -y python3-pip python3-dev python3-setuptools
+apt install -y python3 > /dev/null
+apt install -y python3-pip python3-dev python3-setuptools > /dev/null
 printf "OK\n"
 
 printf "Installing build essentials... "
-apt install -y build-essential libssl-dev libffi-dev
+apt install -y build-essential libssl-dev libffi-dev > /dev/null
 printf "OK\n"
 
 # install python libs
 printf "Installing python virtual environment... "
-apt install -y python3-venv
+apt install -y python3-venv > /dev/null
 python3 -m venv venv
 printf "OK\n"
 
 printf "Installing python libraries... "
 source venv/bin/activate
 
-pip install -y wheel
-pip install -y gunicorn flask
+yes | pip install wheel > /dev/null
+yes | pip install gunicorn flask > /dev/null
 
 deactivate
 printf "OK\n"
