@@ -87,7 +87,7 @@ printf "OK\n"
 # install nginx
 printf "Installing Nginx... "
 
-apt-get install nginx
+apt-get install -y nginx > dev/null
 systemctl status nginx | grep active
 printf "OK\n"
 
