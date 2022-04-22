@@ -30,19 +30,33 @@ fi
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # install python3
-printf "Installing python and dependencies... "
+printf "Updating repos... "
 apt-get -qq update > /dev/null
-apt-get install -y python3 > /dev/null
-apt-get install -y python3-pip python3-dev python3-setuptools > /dev/null
+printf "OK\n"
+
+printf "Installing python3... "
+apt-get -qq  install -y python3 > /dev/null
+printf "OK\n"
+
+printf "Installing python3-pip... "
+apt-get -qq  install -y python3-pip > /dev/null
+printf "OK\n"
+
+printf "Installing python3-dev... "
+apt-get -qq  install -y python3-dev > /dev/null
+printf "OK\n"
+
+printf "Installing python3-setuptools... "
+apt-get -qq  install -y python3-setuptools > /dev/null
 printf "OK\n"
 
 printf "Installing build essentials... "
-apt-get install -y build-essential libssl-dev libffi-dev > /dev/null
+apt-get -qq  install -y build-essential libssl-dev libffi-dev > /dev/null
 printf "OK\n"
 
 # install python libs
 printf "Installing python virtual environment... "
-apt-get install -y python3-venv > /dev/null
+apt-get -qq  install -y python3-venv > /dev/null
 python3 -m venv venv
 printf "OK\n"
 
@@ -80,14 +94,14 @@ printf "OK\n"
 printf "Starting cloudflare-site service... "
 systemctl start cloudflare-site.service
 systemctl enable cloudflare-site.service
+printf "OK\n"
 
 systemctl status cloudflare-site.service | grep active
-printf "OK\n"
 
 # install nginx
 printf "Installing Nginx... "
 
-apt-get install -y nginx > dev/null
+apt-get -qq  install -y nginx > /dev/null
 systemctl status nginx | grep active
 printf "OK\n"
 
@@ -117,10 +131,14 @@ server {
 }
 EOF
 
+printf "OK\n"
+
+echo "Creating symlink for service... "
 ln -s /etc/nginx/sites-available/cloudflare-site /etc/nginx/sites-enabled
+
+echo "Testing nginx configuration... "
 nginx -t
 systemctl restart nginx
-printf "OK\n"
 
 # done
 echo "HTTP service is configured. Acces the site at http://$1 or http://web.$2 or http://app.$2"
