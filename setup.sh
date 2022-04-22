@@ -30,24 +30,35 @@ fi
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # install python3
-echo "Installing python and dependencies..."
+printf "Installing python and dependencies... "
 apt update
-apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
+apt install -y python3
+apt install -y python3-pip python3-dev python3-setuptools
+printf "OK\n"
+
+printf "Installing build essentials... "
+apt install -y build-essential libssl-dev libffi-dev
+printf "OK\n"
 
 # install python libs
-apt install python3-venv
+printf "Installing python virtual environment... "
+apt install -y python3-venv
 python3 -m venv venv
+printf "OK\n"
+
+printf "Installing python libraries... "
 source venv/bin/activate
 
-pip install wheel
-pip install gunicorn flask
+pip install -y wheel
+pip install -y gunicorn flask
 
 deactivate
+printf "OK\n"
 
 # create service
-echo "Creating systemctl service..."
+printf "Creating systemctl service... "
 
-cat << EOF >| /etc/systemd/system/cloudflare.service
+cat << EOF >| /etc/systemd/system/cloudflare-site.service
 [Unit]
 Description=Gunicorn instance to serve myproject
 After=network.target
@@ -57,46 +68,59 @@ User=$(whoami)
 Group=www-data
 WorkingDirectory=$SCRIPT_DIR
 Environment="PATH=$SCRIPT_DIR/venv/bin"
-ExecStart=$SCRIPT_DIR/venv/bin/gunicorn --workers 3 --bind unix:cloudflare.sock -m 007 wsgi:app
+ExecStart=$SCRIPT_DIR/venv/bin/gunicorn --workers 3 --bind unix:cloudflare-site.sock -m 007 wsgi:app
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-# start service
-systemctl start cloudflare.service
-systemctl enable cloudflare.service
+printf "OK\n"
 
-systemctl status cloudflare.service
+# start service
+printf "Starting cloudflare-site service... "
+systemctl start cloudflare-site.service
+systemctl enable cloudflare-site.service
+
+systemctl status cloudflare-site.service | grep active
+printf "OK\n"
 
 # install nginx
-echo "Installing and configuring nginx..."
+printf "Installing Nginx... "
 
 apt install nginx
-systemctl status nginx
+systemctl status nginx | grep active
+printf "OK\n"
 
 # cofigure nginx
-cat << EOF >| /etc/nginx/sites-available/cloudflare
+printf "Configuring Nginx... "
+
+cat << EOF >| /etc/nginx/sites-available/cloudflare-site
 server {
     listen 80;
     server_name $1 web.$2 app.$2;
 
-    root $SCRIPT_DIR/static/;
+    root $SCRIPT_DIR/;
+
+    location /static/ {
+        try_files \$uri \$uri/ @gunicorn;
+    }
 
     location / {
-        try_files $uri $uri/ @gunicorn;
+        include proxy_params;
+        proxy_pass http://unix:$SCRIPT_DIR/cloudflare-site.sock;
     }
 
     location @gunicorn {
         include proxy_params;
-        proxy_pass http://unix:$SCRIPT_DIR/cloudflare.sock;
+        proxy_pass http://unix:$SCRIPT_DIR/cloudflare-site.sock;
     }
 }
 EOF
 
-ln -s /etc/nginx/sites-available/cloudflare /etc/nginx/sites-enabled
+ln -s /etc/nginx/sites-available/cloudflare-site /etc/nginx/sites-enabled
 nginx -t
 systemctl restart nginx
+printf "OK\n"
 
 # done
-echo "HTTP service is configured. Acces the site at $1 or web.$2 or app.$2"
+echo "HTTP service is configured. Acces the site at http://$1 or http://web.$2 or http://app.$2"
