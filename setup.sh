@@ -91,7 +91,7 @@ EOF
 printf "OK\n"
 
 # start service
-printf "Starting cloudflare-site service... "
+printf "Starting cloudflare-site service... \n"
 systemctl start cloudflare-site.service
 systemctl enable cloudflare-site.service
 printf "OK\n"
@@ -99,8 +99,7 @@ printf "OK\n"
 systemctl status cloudflare-site.service | grep active
 
 # install nginx
-printf "Installing Nginx... "
-
+printf "Installing Nginx... \n"
 apt-get -qq  install -y nginx > /dev/null
 systemctl status nginx | grep active
 printf "OK\n"
@@ -141,4 +140,4 @@ nginx -t
 systemctl restart nginx
 
 # done
-echo "HTTP service is configured. Acces the site at http://$1 or http://web.$2 or http://app.$2"
+printf "HTTP service is configured.\nAcces the site at http://$1 or http://web.$2 or http://app.$2\n"
