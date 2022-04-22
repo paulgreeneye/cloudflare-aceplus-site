@@ -31,7 +31,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # install python3
 printf "Installing python and dependencies... "
-apt-get update > /dev/null
+apt-get -qq update > /dev/null
 apt-get install -y python3 > /dev/null
 apt-get install -y python3-pip python3-dev python3-setuptools > /dev/null
 printf "OK\n"
