@@ -18,5 +18,10 @@ def admin_page():
     return render_template('admin.html', headers=zip(keys, values))
 
 
+@app.route('/view_image', methods=['GET'])
+def image_page():
+    return render_template('view_image.html')
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0") # debug=True, host="0.0.0.0", ssl_context='adhoc'
