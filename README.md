@@ -8,11 +8,15 @@
 
 ### 1. Клонувати репозиторій
 
-`git clone https://github.com/paulgreeneye/cloudflare-aceplus-site.git`
+```bash
+git clone https://github.com/paulgreeneye/cloudflare-aceplus-site.git
+```
 
 ### 2. Перейти в директорію з файлами сайту
 
-`cd cloudflare-aceplus-site`
+```bash
+cd cloudflare-aceplus-site
+```
 
 ### 3. Запустити скрипт установки
 
@@ -22,7 +26,9 @@
 
 Наприклад:
 
-`sudo ./setup.sh 10.10.10.10 example.com`
+```bash
+sudo ./setup.sh 10.10.10.10 example.com
+```
 
 ### Готово
 
@@ -32,6 +38,8 @@
 
 ### Шляхи сайту
 
-- `/` Сторінка, яка показує HTTP заголовки запиту
+- `/` Головна сторінка, яка показує HTTP заголовки запиту
+- `/admin` Адмінська сторінка, теж показує HTTP заголовки запиту
+- `/view_image` Сторінка, в яку вбудована картинка /static/image.jpg
 - `/static/image.jpg` Картинка для прикладу
 - `/static/video.mp4` Відео для прикладу
